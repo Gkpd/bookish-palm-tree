@@ -1,0 +1,67 @@
+var config = {
+  type: Phaser.js,
+  width: 800,
+  height: 600,
+  physics: {
+    default: "arcade",
+    arcade: {
+      gravity: { y: 0 },
+      debug: false,
+    },
+  },
+  scene: {
+    preload: preload,
+    create: create,
+    update: update,
+  },
+};
+
+var game = new Phaser.Game(config);
+var ball;
+var paddle1;
+var paddle2;
+var cursors;
+
+function preload() {
+  this.load.image("ball", "assets/ball.png");
+  this.load.image("paddle", "assets/paddle.png");
+}
+
+function create() {
+  ball = this.physics.add.image(400, 300, "ball");
+  ball.setVelocityY(200);
+  ball.setVelocityX(200);
+  ball.setCollideWorldBounds(true);
+  ball.setBounce(1);
+
+  paddle1 = this.physics.add.image(50, 300, "paddle");
+  paddle1.setCollideWorldBounds(true);
+  paddle1.setImmovable(true);
+
+  paddle2 = this.physics.add.image(750, 300, "paddle");
+  paddle2.setCollideWorldBounds(true);
+  paddle2.setImmovable(true);
+
+  cursors = this.input.keyboard.createCursorKeys();
+}
+
+function update() {
+  if (cursors.up.isDown) {
+    paddle1.setVelocityY(-400);
+  } else if (cursors.down.isDown) {
+    paddle1.setVelocityY(400);
+  } else {
+    paddle1.setVelocityY(0);
+  }
+
+  if (ball.body.blocked.left) {
+    console.log("Player 2 wins!");
+    ball.setPosition(400, 300);
+  } else if (ball.body.blocked.right) {
+    console.log("Player 1 wins!");
+    ball.setPosition(400, 300);
+  }
+
+  this.physics.add.collider(ball, paddle1);
+  this.physics.add.collider(ball, paddle2);
+}
